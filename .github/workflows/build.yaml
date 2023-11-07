@@ -61,5 +61,3 @@ jobs:
            --output created-artifact.json   \
            --fail-with-body   
 
-    
-
