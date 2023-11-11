@@ -16,6 +16,10 @@ jobs:
     outputs:
       LATEST_ARTIFACT_VERSION: ${{ steps.artifact-version.outputs.ARTIFACT_VERSION }}
     steps:
+      - name: Check Java version
+        run: | 
+          mvn -version
+          echo $JAVA_HOME
       - name: Checkout
         uses: actions/checkout@v3
       - name: Create application jar
