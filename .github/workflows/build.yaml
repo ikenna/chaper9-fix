@@ -92,7 +92,7 @@ jobs:
           --output build-output/java-client \
           --template-dir chapter8/java-template  \
           --library okhttp-gson \
-          --additional-properties=invokerPackage=com.acmepetsupplies.client,apiPackage=com.acmepetsupplies.api,modelPackage=com.acmepetsupplies.model,groupId=com.acmepetsupplies,artifactId=acmepetsupplies-java-client,artifactVersion=1.0.0-SNAPSHOT
+          --additional-properties=invokerPackage=com.acmepetsupplies.client,apiPackage=com.acmepetsupplies.api,modelPackage=com.acmepetsupplies.model,groupId=com.acmepetsupplies,artifactId=acmepetsupplies-java-client2,artifactVersion=1.0.0-SNAPSHOT
       - name: Publish SDK to GitHub Packages #TODO: ensure you uncomment distribution-management from chapter8/java-template/libraries/okhttp-gson/pom.mustache
         run: |
           cd build-output/java-client
