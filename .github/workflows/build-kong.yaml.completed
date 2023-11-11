@@ -17,6 +17,9 @@ jobs:
     outputs:
       LATEST_ARTIFACT_VERSION: ${{ steps.artifact-version.outputs.ARTIFACT_VERSION }}
     steps:
+      - name: Start background services
+        run: |
+            docker compose -f chapter9/compose.yaml up -d
       - name: Checkout
         uses: actions/checkout@v3
       - name: Create application jar
