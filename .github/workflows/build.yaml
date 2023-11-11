@@ -16,6 +16,8 @@ jobs:
     outputs:
       LATEST_ARTIFACT_VERSION: ${{ steps.artifact-version.outputs.ARTIFACT_VERSION }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -23,11 +25,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Check Java version
-        run: | 
+        run: |
           mvn -version
           echo $JAVA_HOME
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Create application jar
         run: |
           cd chapter8
