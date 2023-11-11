@@ -79,4 +79,48 @@ jobs:
            --data-binary "@build-output/api.yaml"    \
            --output created-artifact.json   \
            --fail-with-body   
+      - name: Get created artifact version
+        id: artifact-version
+        run: |
+          echo "ARTIFACT_VERSION=$(cat created-artifact.json | jq -j '.version')"  >> $GITHUB_OUTPUT
+      - name: Generate Java SDK
+        run: |
+          openapi-generator-cli generate \
+          --input-spec build-output/api.yaml  \
+          --generator-name java \
+          --output build-output/java-client \
+          --template-dir chapter8/java-template  \
+          --library okhttp-gson \
+          --additional-properties=invokerPackage=com.acmepetsupplies.client,apiPackage=com.acmepetsupplies.api,modelPackage=com.acmepetsupplies.model,groupId=com.acmepetsupplies,artifactId=acmepetsupplies-java-client,artifactVersion=1.0.0-SNAPSHOT
+      - name: Publish SDK to GitHub Packages #TODO: ensure you uncomment distribution-management from chapter8/java-template/libraries/okhttp-gson/pom.mustache
+        run: |
+          cd build-output/java-client
+          mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  deploy-and-test:
+    name: Deploy and test
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Deploy Products API service
+        run: |
+           docker compose -f chapter9/compose-api-service.yaml up -d
+      - name: Reconcile API gateway state
+        run: |
+          deck validate --state chapter9/kong.yml
+          deck sync --state chapter9/kong.yml --kong-addr http://localhost:8001
+      - name: Run API conformance tests
+        run: |
+          cd chapter8
+          ./run_integrationtest.sh
+      - name: Mark API definition as passing API conformance testing
+        env:
+          LATEST_API_VERSION: ${{ needs.build.outputs.LATEST_ARTIFACT_VERSION }}
+        run: |
+          curl -X PUT \
+          http://localhost:9090/apis/registry/v2/groups/acmeapis/artifacts/productsapi/versions/$LATEST_API_VERSION/meta \
+          --header "Content-Type: application/json" \
+          --data '{"labels": ["passed-conformance-test"] }' \
+          --fail-with-body
