@@ -85,6 +85,7 @@ jobs:
           echo "ARTIFACT_VERSION=$(cat created-artifact.json | jq -j '.version')"  >> $GITHUB_OUTPUT
       - name: Generate Java SDK
         run: |
+          npm install -g @openapitools/openapi-generator-cli
           openapi-generator-cli generate \
           --input-spec build-output/api.yaml  \
           --generator-name java \
