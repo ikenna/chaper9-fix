@@ -69,7 +69,8 @@ jobs:
         with:
           name: dist-after-linting
           path: |
-            $GITHUB_WORKSPACE
+            ${{ env.GITHUB_WORKSPACE }}
+            build-output
       - name: Publish updated API definition to registry
         run: |
           curl -X POST 'http://localhost:9090/apis/registry/v2/groups/acmeapis/artifacts?ifExists=UPDATE '    \  
