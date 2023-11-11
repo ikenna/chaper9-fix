@@ -64,6 +64,12 @@ jobs:
       - name: Run API linting
         run: |
           npx @stoplight/spectral-cli lint build-output/api.yaml --ruleset chapter8/apis/rulesets/json-api.ruleset.yaml
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-after-linting
+          path: |
+            $GITHUB_WORKSPACE
       - name: Publish updated API definition to registry
         run: |
           curl -X POST 'http://localhost:9090/apis/registry/v2/groups/acmeapis/artifacts?ifExists=UPDATE '    \  
